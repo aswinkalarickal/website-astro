@@ -4,6 +4,11 @@ import ThemeToggle from "./ThemeToggle.astro";
 const links = [
   { href: "/about", label: "About" },
   { href: "/blog", label: "Blog" },
+  {
+    href: "https://github.com/aswinkalarickal/resume/releases/download/latest/Aswin_Resume.pdf",
+    label: "Resume",
+    external: true,
+  },
 ];
 ---
 
@@ -28,6 +33,8 @@ const links = [
           links.map((link) => (
             <a
               href={link.href}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noreferrer" : undefined}
               class="font-display tracking-[2px] text-muted uppercase hover:text-ink"
             >
               {link.label}
@@ -89,6 +96,8 @@ const links = [
           links.map((link) => (
             <a
               href={link.href}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noreferrer" : undefined}
               class="block border-b border-dotted border-line px-6 py-4 font-display tracking-[2px] text-muted uppercase hover:bg-ink/3 hover:text-ink"
             >
               {link.label}
