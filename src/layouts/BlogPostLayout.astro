@@ -23,7 +23,13 @@ const grains = phyllotaxis(20, 46).map((g, i) => ({
 }));
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  publishedTime={pubDate.toISOString()}
+  modifiedTime={updatedDate?.toISOString()}
+>
   <section
     class="relative overflow-hidden border-b border-dotted border-line px-6 py-16 sm:py-20 md:py-24"
   >
