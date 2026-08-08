@@ -1,35 +1,118 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro";
+
+const links = [
+  { href: "/about", label: "About" },
+  { href: "/blog", label: "Blog" },
+];
 ---
 
-<header
-  class="grid grid-cols-[auto_1fr_auto] border-b border-dotted border-line"
->
-  <div class="border-r border-dotted border-line px-6 py-4">
-    <a
-      href="/"
-      class="font-mono text-lg font-semibold tracking-wide text-ink uppercase"
+<header class="border-b border-dotted border-line">
+  <div class="flex items-stretch justify-between">
+    <div
+      class="flex items-center px-4 py-4 sm:px-6 md:border-r md:border-dotted md:border-line"
     >
-      Aswin Kalarickal
-    </a>
+      <a
+        href="/"
+        class="font-mono text-base font-semibold tracking-wide text-ink uppercase sm:text-lg"
+      >
+        Aswin Kalarickal
+      </a>
+    </div>
+
+    <div class="hidden items-stretch md:flex">
+      <div
+        class="flex items-center gap-6 border-r border-dotted border-line px-6 py-4"
+      >
+        {
+          links.map((link) => (
+            <a
+              href={link.href}
+              class="font-display tracking-[2px] text-muted uppercase hover:text-ink"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </div>
+      <div class="flex items-center px-6 py-4">
+        <ThemeToggle />
+      </div>
+    </div>
+
+    <div class="flex items-center px-4 sm:px-6 md:hidden">
+      <button
+        id="menu-toggle"
+        type="button"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        class="cursor-pointer p-3 text-muted hover:text-ink"
+      >
+        <svg
+          id="menu-icon-open"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+        <svg
+          id="menu-icon-close"
+          class="hidden"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
+    </div>
   </div>
-  <div
-    class="flex items-center justify-end gap-6 border-r border-dotted border-line px-6 py-4"
-  >
-    <a
-      href="/about"
-      class="font-display tracking-[2px] text-muted uppercase hover:text-ink"
-    >
-      About
-    </a>
-    <a
-      href="/blog"
-      class="font-display tracking-[2px] text-muted uppercase hover:text-ink"
-    >
-      Blog
-    </a>
-  </div>
-  <div class="flex items-center px-6 py-4">
-    <ThemeToggle />
+
+  <div id="mobile-menu" class="mobile-menu md:hidden">
+    <div>
+      <div class="border-t border-dotted border-line">
+        {
+          links.map((link) => (
+            <a
+              href={link.href}
+              class="block border-b border-dotted border-line px-6 py-4 font-display tracking-[2px] text-muted uppercase hover:bg-ink/3 hover:text-ink"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+        <div class="border-b border-dotted border-line px-6 py-4">
+          <ThemeToggle showLabel />
+        </div>
+      </div>
+    </div>
   </div>
 </header>
+
+<script>
+  const menuButton = document.getElementById("menu-toggle");
+  const menuPanel = document.getElementById("mobile-menu");
+  const openIcon = document.getElementById("menu-icon-open");
+  const closeIcon = document.getElementById("menu-icon-close");
+
+  menuButton?.addEventListener("click", () => {
+    const isOpen = menuPanel?.classList.toggle("is-open") ?? false;
+    menuButton.setAttribute("aria-expanded", String(isOpen));
+    openIcon?.classList.toggle("hidden", isOpen);
+    closeIcon?.classList.toggle("hidden", !isOpen);
+  });
+</script>

@@ -73,12 +73,31 @@
   will-change: transform;
 }
 
+.mobile-menu {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.2s ease;
+}
+
+.mobile-menu.is-open {
+  grid-template-rows: 1fr;
+}
+
+.mobile-menu > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cursor {
     animation: none;
   }
 
   .parallax-layer {
+    transition: none;
+  }
+
+  .mobile-menu {
     transition: none;
   }
 }
