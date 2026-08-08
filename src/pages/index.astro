@@ -128,9 +128,9 @@ const nearGrains = phyllotaxis(16, 42).map((g, i) => ({
     ).matches;
 
     if (parallaxLayers.length && !reduceMotionForParallax) {
-      window.addEventListener("pointermove", (event) => {
-        const x = (event.clientX / window.innerWidth - 0.5) * 2;
-        const y = (event.clientY / window.innerHeight - 0.5) * 2;
+      const applyParallax = (clientX, clientY) => {
+        const x = (clientX / window.innerWidth - 0.5) * 2;
+        const y = (clientY / window.innerHeight - 0.5) * 2;
 
         parallaxLayers.forEach((layer) => {
           const depth = parseFloat(layer.getAttribute("data-depth") || "0");
@@ -138,6 +138,15 @@ const nearGrains = phyllotaxis(16, 42).map((g, i) => ({
           const moveY = y * depth * 100;
           layer.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
         });
+      };
+
+      // Mouse hover drives this continuously. Touch only fires pointermove
+      // while dragging, so pointerdown covers a plain tap too.
+      window.addEventListener("pointermove", (event) => {
+        applyParallax(event.clientX, event.clientY);
+      });
+      window.addEventListener("pointerdown", (event) => {
+        applyParallax(event.clientX, event.clientY);
       });
     }
   </script>
