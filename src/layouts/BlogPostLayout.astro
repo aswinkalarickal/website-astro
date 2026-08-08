@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
+import { phyllotaxis } from "../lib/grains";
 
 interface Props {
   title: string;
@@ -15,13 +16,46 @@ const dateFormat: Intl.DateTimeFormatOptions = {
   month: "long",
   day: "numeric",
 };
+
+const grains = phyllotaxis(20, 46).map((g, i) => ({
+  ...g,
+  size: 1.5 + (i % 3) * 0.5,
+}));
 ---
 
 <BaseLayout title={title} description={description}>
-  <div class="mx-auto w-full max-w-2xl px-4 py-10">
-    <article class="prose">
-      <h1 class="mb-2 font-display text-3xl font-bold text-ink">{title}</h1>
-      <p class="mb-8 font-mono text-sm text-muted">
+  <section
+    class="relative overflow-hidden border-b border-dotted border-line px-6 py-16 sm:py-20 md:py-24"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      {
+        grains.map((grain) => (
+          <span
+            class="absolute rounded-full bg-muted/20"
+            style={{
+              left: `${grain.x}%`,
+              top: `${grain.y}%`,
+              width: `${grain.size}px`,
+              height: `${grain.size}px`,
+            }}
+          />
+        ))
+      }
+    </div>
+    <div class="relative z-10 mx-auto w-full max-w-2xl">
+      <a
+        href="/blog"
+        class="font-mono text-xs tracking-wide text-muted uppercase hover:text-ink"
+      >
+        &larr; Blog
+      </a>
+      <h1 class="mt-4 font-display text-4xl font-bold text-ink sm:text-5xl">
+        {title}
+      </h1>
+      <p class="mt-4 font-mono text-sm text-muted">
         Published <time datetime={pubDate.toISOString()}
           >{pubDate.toLocaleDateString("en-US", dateFormat)}</time
         >
@@ -37,6 +71,13 @@ const dateFormat: Intl.DateTimeFormatOptions = {
           )
         }
       </p>
+    </div>
+  </section>
+
+  <div class="px-6 py-12 md:py-16">
+    <article
+      class="prose prose-lg mx-auto w-full max-w-2xl prose-headings:font-display prose-code:font-mono prose-pre:font-mono"
+    >
       <slot />
     </article>
   </div>
