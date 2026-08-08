@@ -19,9 +19,14 @@ Package manager is **npm** (not yarn/pnpm) — use `npm run dev`, `npm run build
 - Schema fields: `title`, `description`, `pubDate` (coerced date), optional `updatedDate`, optional `draft`. Draft posts must stay filtered out of `getCollection('blog', ...)` calls in `src/pages/blog/index.astro` and `src/pages/blog/[...slug].astro`.
 - Code fence language identifiers must be valid Shiki grammar names (e.g. `apache`, not `apacheconf`), and must not use `lang:filename` annotations — Shiki doesn't support that syntax and silently falls back to plaintext.
 
-## Design
+## Design System
 
-`BaseLayout`, `BlogPostLayout`, `Nav`, and `Footer` (in `src/layouts/` and `src/components/`) are intentionally minimal placeholders pending a real visual design — don't over-invest in their styling without checking first.
+- Theme tokens (`--color-canvas`, `--color-ink`, `--color-muted`, `--color-line`) are defined in `src/styles/global.css`'s `@theme` block (light values) and re-defined inside a `.dark { … }` block (dark values) — every utility built from them (`bg-canvas`, `text-ink`, `text-muted`, `border-line`) flips automatically. `border-line` is deliberately low-opacity (~0.14) for the barely-visible dotted section borders.
+- Dark mode is a **manual toggle**, not just `prefers-color-scheme`: `@custom-variant dark (&:where(.dark, .dark *));` in `global.css` makes Tailwind's `dark:` variant class-based. `BaseLayout.astro` has a no-flash `is:inline` script in `<head>` that sets the `dark` class from `localStorage.theme`, falling back to system preference. `ThemeToggle.astro` flips the class and persists the choice.
+- Fonts are self-hosted via `@fontsource-variable/*` (imported at the top of `global.css`, family names are `"<Name> Variable"`): `font-display` = Space Grotesk (headings, nav/footer labels), `font-sans` = Inter (body text), `font-mono` = JetBrains Mono (code, timestamps).
+- `BaseLayout`'s `<main>` is intentionally generic/full-bleed (`flex flex-1 flex-col`) so the home page hero can go edge-to-edge. Pages that want a readable measure (blog index, blog posts) add their own `mx-auto w-full max-w-2xl px-4 py-10` wrapper inside the slot — don't put that constraint back in `BaseLayout`.
+- Tailwind's preflight sets `cursor: default` on `<button>` — add `cursor-pointer` explicitly on any clickable button (see `ThemeToggle.astro`).
+- Stacking gotcha: an `absolute`-positioned element always paints above `static` in-flow siblings regardless of DOM order. To put decorative absolutely-positioned content (e.g. the hero's parallax dot field) *behind* real content, the real content needs its own `relative` (or other positioned) wrapper — see the `relative z-10` wrapper in `src/pages/index.astro`.
 
 ## Documentation
 
