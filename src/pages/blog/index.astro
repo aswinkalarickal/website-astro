@@ -1,39 +1,76 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { phyllotaxis } from "../../lib/grains";
 
 const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+const grains = phyllotaxis(20, 46).map((g, i) => ({
+  ...g,
+  size: 1.5 + (i % 3) * 0.5,
+}));
 ---
 
 <BaseLayout
   title="Blog | Aswin Kalarickal"
   description="Posts about whatever I'm learning or building."
 >
-  <div class="mx-auto w-full max-w-2xl px-4 py-10">
-    <h1 class="font-display text-3xl font-bold text-ink">Blog</h1>
-    <ul class="mt-8 space-y-8">
+  <section
+    class="relative overflow-hidden border-b border-dotted border-line px-6 py-16 text-center sm:py-20 md:py-24"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
       {
-        posts.map((post) => (
-          <li>
-            <a
-              href={`/blog/${post.id}/`}
-              class="font-display text-xl font-semibold text-ink hover:underline"
-            >
-              {post.data.title}
-            </a>
-            <p class="font-mono text-sm text-muted">
+        grains.map((grain) => (
+          <span
+            class="absolute rounded-full bg-muted/20"
+            style={{
+              left: `${grain.x}%`,
+              top: `${grain.y}%`,
+              width: `${grain.size}px`,
+              height: `${grain.size}px`,
+            }}
+          />
+        ))
+      }
+    </div>
+    <h1
+      class="relative z-10 font-display text-4xl font-bold tracking-wide text-ink uppercase sm:text-5xl md:text-6xl"
+    >
+      Blog
+    </h1>
+  </section>
+
+  <ul class="grid grid-cols-1 sm:grid-cols-2">
+    {
+      posts.map((post) => (
+        <li class="border-b border-dotted border-line odd:sm:border-r">
+          <a
+            href={`/blog/${post.id}/`}
+            aria-label={post.data.title}
+            class="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-ink/3 md:p-8"
+          >
+            <p class="font-mono text-xs tracking-wide text-muted uppercase">
               {post.data.pubDate.toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
               })}
             </p>
-            <p class="mt-1 font-sans text-ink">{post.data.description}</p>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
+            <h2 class="font-display text-xl font-semibold text-ink group-hover:underline md:text-2xl">
+              {post.data.title}
+            </h2>
+            <p class="font-sans text-muted">{post.data.description}</p>
+            <span class="mt-auto pt-2 font-mono text-xs tracking-wide text-muted uppercase group-hover:text-ink">
+              Read post &rarr;
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
 </BaseLayout>

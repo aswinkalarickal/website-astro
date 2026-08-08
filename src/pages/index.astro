@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { phyllotaxis } from "../lib/grains";
 
 const words = ["developer", "engineer", "tinkerer", "lifelong learner"];
 const article = (word: string) => (/^[aeiou]/i.test(word) ? "an" : "a");
@@ -9,25 +10,6 @@ const srText = `I am ${words
   .map((word, i) => `${articles[i]} ${word}`)
   .join(", ")
   .replace(/, ([^,]*)$/, ", and $1")}`;
-
-interface Grain {
-  x: number;
-  y: number;
-  size: number;
-}
-
-function phyllotaxis(count: number, maxRadius: number): Grain[] {
-  const goldenAngle = 137.50776;
-  return Array.from({ length: count }, (_, i) => {
-    const angle = (i * goldenAngle * Math.PI) / 180;
-    const radius = Math.sqrt((i + 0.5) / count) * maxRadius;
-    return {
-      x: 50 + radius * Math.cos(angle),
-      y: 50 + radius * Math.sin(angle),
-      size: 0,
-    };
-  });
-}
 
 const farGrains = phyllotaxis(40, 48).map((g, i) => ({
   ...g,
