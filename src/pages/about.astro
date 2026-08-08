@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { phyllotaxis } from "../lib/grains";
+
+const grains = phyllotaxis(20, 46).map((g, i) => ({
+  ...g,
+  size: 1.5 + (i % 3) * 0.5,
+}));
+---
+
+<BaseLayout
+  title="About | Aswin Kalarickal"
+  description="A little about Aswin Kalarickal."
+>
+  <section
+    class="relative overflow-hidden border-b border-dotted border-line px-6 py-16 text-center sm:py-20 md:py-24"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      {
+        grains.map((grain) => (
+          <span
+            class="absolute rounded-full bg-muted/20"
+            style={{
+              left: `${grain.x}%`,
+              top: `${grain.y}%`,
+              width: `${grain.size}px`,
+              height: `${grain.size}px`,
+            }}
+          />
+        ))
+      }
+    </div>
+    <h1
+      class="relative z-10 font-display text-4xl font-bold tracking-wide text-ink uppercase sm:text-5xl md:text-6xl"
+    >
+      About
+    </h1>
+  </section>
+
+  <div class="px-6 py-12 md:py-16">
+    <article
+      class="prose prose-lg mx-auto w-full max-w-2xl prose-headings:font-display prose-code:font-mono prose-pre:font-mono"
+    >
+      <p>
+        Hi, I'm Aswin — a developer, engineer, tinkerer, and lifelong learner,
+        depending on which problem happens to have my attention this week.
+      </p>
+      <p>
+        Most of what I build lives somewhere between the browser and the server.
+        I like wiring up infrastructure about as much as I like polishing an
+        interface, which is probably why my writing swings between AWS, Nginx,
+        and Node.js on one end, and small front-end experiments like this site
+        on the other.
+      </p>
+      <p>
+        This site is one of those experiments — built with Astro, and designed
+        in small iterative passes until the details felt right: the dotted
+        borders, the light and dark themes, the type.
+      </p>
+      <p>
+        I write about the things I learn along the way, mostly so future-me has
+        something to refer back to. You'll find those notes on the <a
+          href="/blog">blog</a
+        >, and the code behind most of what I make on <a
+          href="https://github.com/aswinkalarickal"
+          target="_blank"
+          rel="noreferrer">GitHub</a
+        >.
+      </p>
+      <p>
+        Want to say hello? Reach me at <a
+          href="mailto:mail@aswink.in"
+          class="font-mono">mail@aswink.in</a
+        >.
+      </p>
+    </article>
+  </div>
+</BaseLayout>
