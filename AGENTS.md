@@ -44,6 +44,14 @@ Package manager is **npm** (not yarn/pnpm) — use `npm run dev`, `npm run build
 - `Footer.astro` is deliberately quieter than `Nav.astro`: lowercase `font-mono` (no `uppercase`/`tracking-wide`) instead of the nav's bold uppercase `font-display`, on the theory that a loud header + quiet footer reads better than matching caps in both, especially now that the footer holds three items (copyright, GitHub, email) instead of one. Icon-only links (GitHub uses a filled brand-mark path, email a stroke-based envelope matching `ThemeToggle`'s line-icon style) need `aria-label` on the `<a>` and `aria-hidden="true"` on the `<svg>`, since the icon alone gives the link no accessible name.
 - To make a row of boxes span full-width with no dead gap (footer: copyright + GitHub + email), give the first box `flex-1` so it consumes all remaining space rather than using `justify-between` (which leaves genuine empty canvas between groups). Its content stays left-aligned on its own since flex children default to `justify-content: normal` on their own axis. This matters for borders too: boxes that are truly adjacent (via `flex-1`, no gap) need exactly one shared divider between them (avoid doubling, per the grid-of-boxes rule above) — but a box-group that sits across a real `justify-between` gap from its neighbor (like `Nav.astro`'s right-side group) needs its own opening border (e.g. `border-l` on the group) to read as bounded, since there's nothing physically adjacent to borrow an edge from.
 
+## Hosting
+
+- Hosted on Firebase Hosting, project `aswin-website` (`.firebaserc` pins this as the default project). Live URL: `https://aswin-website.web.app`.
+- `firebase.json` sets `public: "dist"` — Astro's default static build output. No rewrites/SPA fallback needed since every route is a real static file (`astro build` emits `path/index.html` per page); Firebase Hosting serves those automatically for both `/path` (301 → `/path/`) and `/path/` requests.
+- Deploy with `npm run deploy` (runs `astro build` then `firebase deploy --only hosting`). Requires being logged in via `firebase login` (CLI: `firebase-tools`, installed globally, not a project devDependency).
+- `astro.config.mjs`'s `site: "https://aswink.in"` anticipates the custom domain but it is **not yet connected** — DNS for `aswink.in` has not been pointed at Firebase Hosting. Until that's done, the canonical live URL is the `.web.app` one above.
+- `.firebase/` (local deploy cache) and `firebase-debug.log` are gitignored.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
