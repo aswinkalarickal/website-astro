@@ -1,20 +1,162 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const words = ["developer", "engineer", "tinkerer", "lifelong learner"];
+const article = (word: string) => (/^[aeiou]/i.test(word) ? "an" : "a");
+const articles = words.map(article);
+
+const srText = `I am ${words
+  .map((word, i) => `${articles[i]} ${word}`)
+  .join(", ")
+  .replace(/, ([^,]*)$/, ", and $1")}`;
+
+interface Grain {
+  x: number;
+  y: number;
+  size: number;
+}
+
+function phyllotaxis(count: number, maxRadius: number): Grain[] {
+  const goldenAngle = 137.50776;
+  return Array.from({ length: count }, (_, i) => {
+    const angle = (i * goldenAngle * Math.PI) / 180;
+    const radius = Math.sqrt((i + 0.5) / count) * maxRadius;
+    return {
+      x: 50 + radius * Math.cos(angle),
+      y: 50 + radius * Math.sin(angle),
+      size: 0,
+    };
+  });
+}
+
+const farGrains = phyllotaxis(40, 48).map((g, i) => ({
+  ...g,
+  size: 1.5 + (i % 3) * 0.4,
+}));
+const nearGrains = phyllotaxis(16, 42).map((g, i) => ({
+  ...g,
+  size: 2.5 + (i % 3) * 0.6,
+}));
 ---
 
 <BaseLayout>
-  <h1 class="text-4xl font-bold text-slate-900">Hi, I'm Aswin.</h1>
-  <p class="mt-4 text-lg text-slate-600">
-    This is a placeholder home page. The real design is coming soon &mdash; for
-    now this is just a dummy boilerplate to prove the site's plumbing works:
-    pages, layouts, Tailwind, and a Markdown-powered blog via Astro Content
-    Collections.
-  </p>
-  <p class="mt-4">
-    <a
-      href="/blog"
-      class="text-slate-900 underline underline-offset-2 hover:text-slate-600"
-      >Read the blog &rarr;</a
+  <section
+    class="relative flex flex-1 flex-col items-end justify-center px-6 py-10 pr-10 text-right sm:pr-16 md:pr-24 lg:pr-32"
+    aria-label="Introduction"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
     >
-  </p>
+      <div class="parallax-layer absolute inset-0" data-depth="0.03">
+        {
+          farGrains.map((grain) => (
+            <span
+              class="absolute rounded-full bg-muted/20"
+              style={{
+                left: `${grain.x}%`,
+                top: `${grain.y}%`,
+                width: `${grain.size}px`,
+                height: `${grain.size}px`,
+              }}
+            />
+          ))
+        }
+      </div>
+      <div class="parallax-layer absolute inset-0" data-depth="0.08">
+        {
+          nearGrains.map((grain) => (
+            <span
+              class="absolute rounded-full bg-muted/30"
+              style={{
+                left: `${grain.x}%`,
+                top: `${grain.y}%`,
+                width: `${grain.size}px`,
+                height: `${grain.size}px`,
+              }}
+            />
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="relative z-10 flex flex-col items-end text-right">
+      <p id="article" class="font-sans text-xl text-muted md:text-2xl">
+        I am a
+      </p>
+      <p
+        class="mt-2 font-display text-7xl leading-none font-semibold tracking-tight text-ink sm:text-8xl md:text-9xl"
+      >
+        <span id="typewriter" aria-hidden="true"></span><span
+          class="cursor"
+          aria-hidden="true">_</span
+        >
+      </p>
+      <span class="sr-only">{srText}</span>
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ words, articles }}>
+    const el = document.getElementById("typewriter");
+    const articleEl = document.getElementById("article");
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (!el || !articleEl) {
+      // no-op
+    } else if (reduceMotion) {
+      articleEl.textContent = `I am ${articles[0]}`;
+      el.textContent = words[0];
+    } else {
+      let wordIndex = 0;
+      let charIndex = 0;
+      let deleting = false;
+
+      articleEl.textContent = `I am ${articles[0]}`;
+
+      const tick = () => {
+        const word = words[wordIndex];
+        charIndex += deleting ? -1 : 1;
+        el.textContent = word.slice(0, charIndex);
+
+        let delay = deleting ? 40 : 90;
+
+        if (!deleting && charIndex === word.length) {
+          deleting = true;
+          delay = 1400;
+        } else if (deleting && charIndex === 0) {
+          deleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+          articleEl.textContent = `I am ${articles[wordIndex]}`;
+          delay = 300;
+        }
+
+        setTimeout(tick, delay);
+      };
+
+      tick();
+    }
+  </script>
+
+  <script is:inline>
+    const parallaxLayers = document.querySelectorAll(".parallax-layer");
+    const reduceMotionForParallax = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (parallaxLayers.length && !reduceMotionForParallax) {
+      window.addEventListener("pointermove", (event) => {
+        const x = (event.clientX / window.innerWidth - 0.5) * 2;
+        const y = (event.clientY / window.innerHeight - 0.5) * 2;
+
+        parallaxLayers.forEach((layer) => {
+          const depth = parseFloat(layer.getAttribute("data-depth") || "0");
+          const moveX = x * depth * 100;
+          const moveY = y * depth * 100;
+          layer.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
+        });
+      });
+    }
+  </script>
 </BaseLayout>

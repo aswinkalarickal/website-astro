@@ -1,1 +1,49 @@
 @import "tailwindcss";
+@import "@fontsource-variable/space-grotesk/wght.css";
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-canvas: #f6f5f1;
+  --color-ink: #121110;
+  --color-muted: #6f6d66;
+  --color-line: rgb(27 26 23 / 0.14);
+
+  --font-display: "Space Grotesk Variable", ui-sans-serif, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+
+.dark {
+  --color-canvas: #080c13;
+  --color-ink: #e7eaf0;
+  --color-muted: #8a93a6;
+  --color-line: rgb(231 234 240 / 0.14);
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.cursor {
+  animation: blink 1s step-end infinite;
+}
+
+.parallax-layer {
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+  }
+
+  .parallax-layer {
+    transition: none;
+  }
+}
