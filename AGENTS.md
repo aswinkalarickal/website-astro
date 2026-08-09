@@ -54,6 +54,13 @@ Package manager is **npm** (not yarn/pnpm) — use `npm run dev`, `npm run build
 - `type` prop (`"website"` default, `"article"` for posts) controls `og:type`; only `BlogPostLayout.astro` passes `type="article"` along with `publishedTime`/`modifiedTime` (from the post's `pubDate`/`updatedDate`, `.toISOString()`'d) to emit `article:published_time`/`article:modified_time`. Top-level pages (home, About, blog index) don't pass these props and stay `website`.
 - `theme-color` uses two static `<meta>` tags gated by `media="(prefers-color-scheme: light|dark)"` matching the exact `--color-canvas` values (`#f6f5f1` / `#080c13`) rather than one script-updated tag — simpler, and the small mismatch (it follows OS preference, not the manual in-app toggle) is an accepted tradeoff.
 
+## Analytics
+
+- **Cloudflare Web Analytics** (page views only, no custom events) via a single `<script>` in `BaseLayout.astro`'s `<head>`, right before `</head>`. Chosen over Vercel Analytics/GA4/Plausible: free with no event caps, cookie-free (no consent banner needed), and — critically — it's a plain JS snippet that works regardless of host, unlike Cloudflare's zone-level "auto-inject" option which only fires for traffic actually proxied through Cloudflare's edge (this site is served by Vercel, not Cloudflare Pages, so auto-inject isn't reliable here).
+- The beacon token (`CF_ANALYTICS_TOKEN` in `BaseLayout.astro`) is a plain hardcoded string, not an env var — Cloudflare's Web Analytics token is explicitly non-secret by design (same idea as a GA measurement ID), and this repo has no existing env var precedent worth introducing just for a public value.
+- The script only renders when `import.meta.env.PROD` is true (Astro/Vite's built-in prod-build flag), so `npm run dev` never sends analytics — verified by grepping `dist/**/*.html` for `cloudflareinsights.com` after `npm run build` (present on every page) vs. the dev server response (absent). It uses `is:inline` like the file's existing no-flash dark-mode script, keeping Astro from trying to process/bundle it.
+- The token isn't tied to a specific hostname, so it doesn't need to change when the site cuts over from the current staging domain (`www2.aswink.in`) to production `aswink.in` (see Hosting section).
+
 ## SEO
 
 - `@astrojs/sitemap` (registered in `astro.config.mjs`'s `integrations`) auto-generates `sitemap-index.xml`/`sitemap-0.xml` at build time from whatever static routes actually get built — draft posts need no extra sitemap-specific filtering since `src/pages/blog/[...slug].astro`'s `getStaticPaths` already excludes `data.draft` posts from being built as pages at all.
