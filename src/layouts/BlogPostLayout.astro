@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
+import BackToTop from "../components/BackToTop.astro";
 import { phyllotaxis } from "../lib/grains";
 
 interface Props {
@@ -87,4 +88,6 @@ const grains = phyllotaxis(20, 46).map((g, i) => ({
       <slot />
     </article>
   </div>
+
+  <BackToTop />
 </BaseLayout>

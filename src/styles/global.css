@@ -88,6 +88,12 @@
   overflow: hidden;
 }
 
+.back-to-top {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cursor {
     animation: none;
@@ -98,6 +104,10 @@
   }
 
   .mobile-menu {
+    transition: none;
+  }
+
+  .back-to-top {
     transition: none;
   }
 }
