@@ -54,15 +54,13 @@ Package manager is **npm** (not yarn/pnpm) — use `npm run dev`, `npm run build
 ## SEO
 
 - `@astrojs/sitemap` (registered in `astro.config.mjs`'s `integrations`) auto-generates `sitemap-index.xml`/`sitemap-0.xml` at build time from whatever static routes actually get built — draft posts need no extra sitemap-specific filtering since `src/pages/blog/[...slug].astro`'s `getStaticPaths` already excludes `data.draft` posts from being built as pages at all.
-- `public/robots.txt` is a plain static file (allows all crawlers, points `Sitemap:` at `https://aswink.in/sitemap-index.xml`) — both the sitemap and robots.txt use the canonical `aswink.in` domain from `astro.config.mjs`'s `site`, not the `.web.app` Firebase URL, even though the custom domain isn't connected yet (see Hosting section below).
+- `public/robots.txt` is a plain static file (allows all crawlers, points `Sitemap:` at `https://aswink.in/sitemap-index.xml`) — both the sitemap and robots.txt use the eventual production `aswink.in` domain from `astro.config.mjs`'s `site`, not whatever staging domain is actually live (see Hosting section below).
 
 ## Hosting
 
-- Hosted on Firebase Hosting, project `aswin-website` (`.firebaserc` pins this as the default project). Live URL: `https://aswin-website.web.app`.
-- `firebase.json` sets `public: "dist"` — Astro's default static build output. No rewrites/SPA fallback needed since every route is a real static file (`astro build` emits `path/index.html` per page); Firebase Hosting serves those automatically for both `/path` (301 → `/path/`) and `/path/` requests.
-- Deploy with `npm run deploy` (runs `astro build` then `firebase deploy --only hosting`). Requires being logged in via `firebase login` (CLI: `firebase-tools`, installed globally, not a project devDependency).
-- `astro.config.mjs`'s `site: "https://aswink.in"` anticipates the custom domain but it is **not yet connected** — DNS for `aswink.in` has not been pointed at Firebase Hosting. Until that's done, the canonical live URL is the `.web.app` one above.
-- `.firebase/` (local deploy cache) and `firebase-debug.log` are gitignored.
+- Hosted on **Vercel**, connected via GitHub integration — every push to `main` auto-deploys, no manual deploy step or CLI config committed to this repo (previously also mirrored to Firebase Hosting during evaluation; that was decommissioned in favor of Vercel's git-based auto-deploy and preview URLs per PR).
+- `astro.config.mjs`'s `site: "https://aswink.in"` anticipates the eventual production domain, but the live custom domain right now is a staging one, **`www2.aswink.in`** — `aswink.in`/`www.aswink.in` still serve the old pre-rebuild site. Don't assume `astro.config.mjs`'s `site` value matches what's actually live until that cutover happens.
+- No `firebase.json`/`.firebaserc` or `vercel.json` exist in this repo — Vercel's zero-config static-site detection for Astro needs no project-level config file.
 
 ## Documentation
 

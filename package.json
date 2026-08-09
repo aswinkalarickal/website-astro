@@ -11,8 +11,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint .",
-    "format": "prettier --write .",
-    "deploy": "astro build && firebase deploy --only hosting"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
