@@ -1,43 +1,56 @@
-# Astro Starter Kit: Minimal
+# aswink.in
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Source for [aswink.in](https://aswink.in) — a personal site and blog built with [Astro](https://astro.build), [Tailwind CSS](https://tailwindcss.com), and Astro Content Collections.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Project Structure
 
 ```text
 /
-├── public/
+├── public/                  # static assets (favicons, robots.txt, ...)
 ├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+│   ├── components/          # Nav, Footer, ThemeToggle, BackToTop, ...
+│   ├── content/
+│   │   └── blog/            # blog posts (*.md)
+│   ├── content.config.ts    # `blog` collection schema
+│   ├── layouts/              # BaseLayout, BlogPostLayout
+│   ├── lib/                  # e.g. grains.ts (phyllotaxis dot-scatter)
+│   ├── pages/                # routes: /, /about, /blog, /blog/[...slug]
+│   └── styles/                # global.css (Tailwind theme tokens)
+└── astro.config.mjs
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Blog posts are Markdown files in `src/content/blog/`, validated against the Zod schema in `src/content.config.ts` (`title`, `description`, `pubDate`, optional `updatedDate`/`draft`).
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Commands
 
-Any static assets, like images, can be placed in the `public/` directory.
+Package manager is **npm**. All commands run from the project root:
 
-## 🧞 Commands
+| Command             | Action                                          |
+| :------------------- | :----------------------------------------------- |
+| `npm install`         | Install dependencies                             |
+| `npm run dev`          | Start local dev server at `localhost:4321`       |
+| `npm run build`        | Build the production site to `./dist/`           |
+| `npm run preview`      | Preview the production build locally             |
+| `npm run lint`         | Lint with ESLint                                 |
+| `npm run format`       | Format with Prettier                             |
+| `npm run astro ...`    | Run Astro CLI commands (e.g. `astro check`)      |
 
-All commands are run from the root of the project, from a terminal:
+During development, prefer running the dev server in background mode so it doesn't block the terminal:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```sh
+astro dev --background
+```
 
-## 👀 Want to learn more?
+Manage it with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Stack
+
+- **Astro** — static site generation, Content Layer API for the blog collection
+- **Tailwind CSS v4** — theme tokens defined in `src/styles/global.css`, manual light/dark toggle (not just `prefers-color-scheme`)
+- **Self-hosted fonts** — Space Grotesk (display), Inter (body), JetBrains Mono (code) via `@fontsource-variable/*`
+- **@astrojs/sitemap** — sitemap generation at build time
+- Hosted on **Vercel**, auto-deployed from `main`
+
+## Learn more
+
+- [Astro documentation](https://docs.astro.build)
