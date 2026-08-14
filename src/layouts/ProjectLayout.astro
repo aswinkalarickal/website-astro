@@ -1,0 +1,229 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import BackToTop from "../components/BackToTop.astro";
+import { Image, getImage } from "astro:assets";
+import { phyllotaxis } from "../lib/grains";
+import type { ImageMetadata } from "astro";
+
+interface ProjectLink {
+  label: string;
+  url: string;
+}
+
+interface Screenshot {
+  src: ImageMetadata;
+  alt: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  tags?: string[];
+  links?: ProjectLink[];
+  screenshots?: Screenshot[];
+}
+
+const { title, description, pubDate, updatedDate, tags, links, screenshots } =
+  Astro.props;
+
+const dateFormat: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
+
+const grains = phyllotaxis(20, 46).map((g, i) => ({
+  ...g,
+  size: 1.5 + (i % 3) * 0.5,
+}));
+
+const fullScreenshots = screenshots
+  ? await Promise.all(
+      screenshots.map((shot) => getImage({ src: shot.src, width: 1600 })),
+    )
+  : [];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  publishedTime={pubDate.toISOString()}
+  modifiedTime={updatedDate?.toISOString()}
+>
+  <section
+    class="relative overflow-hidden border-b border-dotted border-line px-6 py-16 sm:py-20 md:py-24"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      {
+        grains.map((grain) => (
+          <span
+            class="absolute rounded-full bg-muted/20"
+            style={{
+              left: `${grain.x}%`,
+              top: `${grain.y}%`,
+              width: `${grain.size}px`,
+              height: `${grain.size}px`,
+            }}
+          />
+        ))
+      }
+    </div>
+    <div class="relative z-10 mx-auto w-full max-w-2xl">
+      <a
+        href="/projects"
+        class="font-mono text-xs tracking-wide text-muted uppercase hover:text-ink"
+      >
+        &larr; Projects
+      </a>
+      <h1 class="mt-4 font-display text-4xl font-bold text-ink sm:text-5xl">
+        {title}
+      </h1>
+      <p class="mt-4 font-mono text-sm text-muted">
+        Published <time datetime={pubDate.toISOString()}
+          >{pubDate.toLocaleDateString("en-US", dateFormat)}</time
+        >
+        {
+          updatedDate && (
+            <>
+              {" "}
+              &middot; Updated{" "}
+              <time datetime={updatedDate.toISOString()}>
+                {updatedDate.toLocaleDateString("en-US", dateFormat)}
+              </time>
+            </>
+          )
+        }
+      </p>
+
+      {
+        tags && tags.length > 0 && (
+          <p class="mt-3 font-mono text-xs tracking-wide text-muted uppercase">
+            {tags.join(" · ")}
+          </p>
+        )
+      }
+
+      {
+        links && links.length > 0 && (
+          <ul class="mt-4 flex flex-wrap gap-3">
+            {links.map((link) => (
+              <li>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  class="inline-flex items-center gap-1 border border-dotted border-line px-3 py-1.5 font-mono text-xs tracking-wide text-muted uppercase hover:border-ink hover:text-ink"
+                >
+                  {link.label} &rarr;
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    screenshots && screenshots.length > 0 && (
+      <div class="border-b border-dotted border-line px-6 py-12 md:py-16">
+        <div
+          class="scrollbar-hide flex snap-x snap-mandatory justify-center-safe gap-4 overflow-x-auto scroll-smooth"
+          tabindex="0"
+          aria-label="Project screenshots"
+        >
+          {screenshots.map((shot, i) => (
+            <figure class="w-[min(85vw,420px)] shrink-0 snap-start border border-dotted border-line">
+              <button
+                type="button"
+                class="lightbox-trigger block w-full cursor-pointer"
+                data-full-src={fullScreenshots[i].src}
+                data-alt={shot.alt}
+                aria-label={`View larger screenshot: ${shot.alt}`}
+              >
+                <Image
+                  src={shot.src}
+                  alt={shot.alt}
+                  width={840}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  class="w-full"
+                />
+              </button>
+              <figcaption class="border-t border-dotted border-line px-4 py-2 font-mono text-xs text-muted">
+                {shot.alt}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+
+      <dialog
+        id="screenshot-lightbox"
+        class="lightbox-dialog m-auto max-h-[90vh] max-w-[90vw] border border-dotted border-line bg-canvas p-0 backdrop:bg-black/80"
+      >
+        <div class="relative">
+          <button
+            type="button"
+            class="lightbox-close absolute top-3 right-3 cursor-pointer border border-dotted border-line bg-canvas p-2 text-muted hover:text-ink"
+            aria-label="Close"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 6l12 12M18 6L6 18"></path>
+            </svg>
+          </button>
+          <img id="lightbox-image" src="" alt="" class="block max-h-[90vh] w-auto" />
+        </div>
+      </dialog>
+    )
+  }
+
+  <div class="px-6 py-12 md:py-16">
+    <article
+      class="prose prose-lg mx-auto w-full max-w-2xl prose-headings:font-display prose-code:font-mono prose-pre:font-mono"
+    >
+      <slot />
+    </article>
+  </div>
+
+  <BackToTop />
+
+  <script>
+    const dialog = document.getElementById("screenshot-lightbox");
+    const image = document.getElementById("lightbox-image");
+    const closeButton = dialog?.querySelector(".lightbox-close");
+
+    document.querySelectorAll(".lightbox-trigger").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const fullSrc = trigger.getAttribute("data-full-src");
+        const alt = trigger.getAttribute("data-alt") ?? "";
+        if (image && fullSrc) {
+          image.setAttribute("src", fullSrc);
+          image.setAttribute("alt", alt);
+        }
+        dialog?.showModal();
+      });
+    });
+
+    closeButton?.addEventListener("click", () => dialog?.close());
+    dialog?.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  </script>
+</BaseLayout>

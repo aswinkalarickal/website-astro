@@ -1,0 +1,103 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { phyllotaxis } from "../../lib/grains";
+
+const projects = (
+  await getCollection("projects", ({ data }) => !data.draft)
+).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const grains = phyllotaxis(20, 46).map((g, i) => ({
+  ...g,
+  size: 1.5 + (i % 3) * 0.5,
+}));
+---
+
+<BaseLayout
+  title="Projects | Aswin Kalarickal"
+  description="Things I've built."
+>
+  <section
+    class="relative overflow-hidden border-b border-dotted border-line px-6 py-16 text-center sm:py-20 md:py-24"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      {
+        grains.map((grain) => (
+          <span
+            class="absolute rounded-full bg-muted/20"
+            style={{
+              left: `${grain.x}%`,
+              top: `${grain.y}%`,
+              width: `${grain.size}px`,
+              height: `${grain.size}px`,
+            }}
+          />
+        ))
+      }
+    </div>
+    <h1
+      class="relative z-10 font-display text-4xl font-bold tracking-wide text-ink uppercase sm:text-5xl md:text-6xl"
+    >
+      Projects
+    </h1>
+  </section>
+
+  <ul class="grid grid-cols-1 sm:grid-cols-2">
+    {
+      projects.map((project) => {
+        const cover = project.data.screenshots?.[0];
+        return (
+          <li class="border-b border-dotted border-line odd:sm:border-r">
+            <a
+              href={`/projects/${project.id}/`}
+              aria-label={project.data.title}
+              class="group flex h-full flex-col transition-colors hover:bg-ink/3"
+            >
+              {cover ? (
+                <div class="aspect-video w-full overflow-hidden border-b border-dotted border-line">
+                  <Image
+                    src={cover.src}
+                    alt={cover.alt}
+                    width={800}
+                    class="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div class="flex aspect-video w-full items-center justify-center border-b border-dotted border-line bg-muted/5">
+                  <span class="font-mono text-xs tracking-wide text-muted uppercase">
+                    No preview
+                  </span>
+                </div>
+              )}
+              <div class="flex flex-1 flex-col gap-3 p-6 md:p-8">
+                <p class="font-mono text-xs tracking-wide text-muted uppercase">
+                  {project.data.pubDate.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <h2 class="font-display text-xl font-semibold text-ink group-hover:underline md:text-2xl">
+                  {project.data.title}
+                </h2>
+                <p class="font-sans text-muted">{project.data.description}</p>
+                {project.data.tags && project.data.tags.length > 0 && (
+                  <p class="font-mono text-xs tracking-wide text-muted uppercase">
+                    {project.data.tags.join(" · ")}
+                  </p>
+                )}
+                <span class="mt-auto pt-2 font-mono text-xs tracking-wide text-muted uppercase group-hover:text-ink">
+                  View project &rarr;
+                </span>
+              </div>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</BaseLayout>
