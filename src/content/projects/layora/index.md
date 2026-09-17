@@ -3,6 +3,14 @@ title: "Layora: Wind-Down Made Easy"
 description: "A sleep transition app that routes you through a different guided wind-down depending on whether you're racing, wired, or exhausted."
 pubDate: 2026-09-17
 tags: ["Flutter", "Firebase", "Superwall", "Claude Code"]
+keywords:
+  [
+    "sleep app",
+    "wind-down app",
+    "sleep transition",
+    "Flutter app",
+    "guided relaxation",
+  ]
 links:
   - label: "Website"
     url: "https://layora.app"

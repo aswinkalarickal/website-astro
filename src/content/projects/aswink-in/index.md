@@ -3,6 +3,13 @@ title: "aswink.in"
 description: "This site — a fast, minimal Astro portfolio with a hand-tuned dotted-grid design system and dark mode."
 pubDate: 2026-08-08
 tags: ["Astro", "Tailwind CSS", "TypeScript", "Vercel"]
+keywords:
+  [
+    "Astro portfolio",
+    "personal website",
+    "developer portfolio",
+    "Astro blog",
+  ]
 links:
   - label: "Live Site"
     url: "https://aswink.in"

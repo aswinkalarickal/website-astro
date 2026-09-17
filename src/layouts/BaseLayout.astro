@@ -6,6 +6,7 @@ import Footer from "../components/Footer.astro";
 interface Props {
   title?: string;
   description?: string;
+  keywords?: string[];
   type?: "website" | "article";
   publishedTime?: string;
   modifiedTime?: string;
@@ -14,6 +15,7 @@ interface Props {
 const {
   title = "Aswin Kalarickal",
   description = "Aswin Kalarickal — developer, engineer, and tinkerer writing about code, infrastructure, and whatever he's learning next.",
+  keywords,
   type = "website",
   publishedTime,
   modifiedTime,
@@ -41,6 +43,11 @@ const CF_ANALYTICS_TOKEN = "37f3e3a8c2ca4f7b90d1058687fd01e4";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    {
+      keywords && keywords.length > 0 && (
+        <meta name="keywords" content={keywords.join(", ")} />
+      )
+    }
     <meta
       name="theme-color"
       content="#f6f5f1"

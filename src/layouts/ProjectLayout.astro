@@ -21,12 +21,21 @@ interface Props {
   pubDate: Date;
   updatedDate?: Date;
   tags?: string[];
+  keywords?: string[];
   links?: ProjectLink[];
   screenshots?: Screenshot[];
 }
 
-const { title, description, pubDate, updatedDate, tags, links, screenshots } =
-  Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  tags,
+  keywords,
+  links,
+  screenshots,
+} = Astro.props;
 
 const dateFormat: Intl.DateTimeFormatOptions = {
   year: "numeric",
@@ -60,6 +69,7 @@ const CAROUSEL_MAX_HEIGHT_PX = 320; // md:h-80, used to size the source raster
 <BaseLayout
   title={title}
   description={description}
+  keywords={keywords}
   type="article"
   publishedTime={pubDate.toISOString()}
   modifiedTime={updatedDate?.toISOString()}

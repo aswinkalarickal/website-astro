@@ -12,11 +12,16 @@ const grains = phyllotaxis(20, 46).map((g, i) => ({
   ...g,
   size: 1.5 + (i % 3) * 0.5,
 }));
+
+const keywords = [
+  ...new Set(projects.flatMap((project) => project.data.keywords ?? [])),
+];
 ---
 
 <BaseLayout
   title="Projects | Aswin Kalarickal"
   description="Things I've built."
+  keywords={keywords}
 >
   <section
     class="relative overflow-hidden border-b border-dotted border-line px-6 py-16 text-center sm:py-20 md:py-24"
