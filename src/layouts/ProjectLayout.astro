@@ -44,6 +44,17 @@ const fullScreenshots = screenshots
       screenshots.map((shot) => getImage({ src: shot.src, width: 1600 })),
     )
   : [];
+
+// Screenshots can mix aspect ratios (e.g. a landscape cover next to portrait
+// phone captures). Fixing the carousel to a shared height — rather than the
+// old shared width — keeps every slide the same height with no cropping.
+// This is a fixed preview height, not derived from any screenshot's own
+// resolution — deriving it from a real screenshot's pixel dimensions made
+// the whole carousel balloon to ~900px tall. Slides are meant to be a quick
+// preview strip (click one to see it full-size in the lightbox), so a modest
+// height that scales gently across breakpoints reads much better.
+const CAROUSEL_HEIGHT_CLASS = "h-64 sm:h-72 md:h-80";
+const CAROUSEL_MAX_HEIGHT_PX = 320; // md:h-80, used to size the source raster
 ---
 
 <BaseLayout
@@ -139,10 +150,10 @@ const fullScreenshots = screenshots
           aria-label="Project screenshots"
         >
           {screenshots.map((shot, i) => (
-            <figure class="w-[min(85vw,420px)] shrink-0 snap-start border border-dotted border-line">
+            <figure class="flex shrink-0 snap-start flex-col items-center border border-dotted border-line">
               <button
                 type="button"
-                class="lightbox-trigger block w-full cursor-pointer"
+                class={`lightbox-trigger cursor-pointer ${CAROUSEL_HEIGHT_CLASS}`}
                 data-full-src={fullScreenshots[i].src}
                 data-alt={shot.alt}
                 aria-label={`View larger screenshot: ${shot.alt}`}
@@ -150,13 +161,13 @@ const fullScreenshots = screenshots
                 <Image
                   src={shot.src}
                   alt={shot.alt}
-                  width={840}
+                  height={CAROUSEL_MAX_HEIGHT_PX * 2}
                   loading={i === 0 ? "eager" : "lazy"}
                   decoding="async"
-                  class="w-full"
+                  class="h-full w-auto"
                 />
               </button>
-              <figcaption class="border-t border-dotted border-line px-4 py-2 font-mono text-xs text-muted">
+              <figcaption class="max-w-105 self-stretch border-t border-dotted border-line px-4 py-2 font-mono text-xs text-muted">
                 {shot.alt}
               </figcaption>
             </figure>
